@@ -5,11 +5,10 @@ import Features from '../components/landing/Features';
 import Audience from '../components/landing/Audience';
 import Contact from '../components/landing/Contact';
 import Footer from '../components/landing/Footer';
-import './Landing.css';
 
 const Landing = () => {
   return (
-    <div className="landing-page-wrapper">
+    <div className="font-['Lexend',sans-serif] text-[#212529] bg-[#f8f9fa] min-h-screen scroll-smooth">
       <Header />
       <Hero />
       <Features />

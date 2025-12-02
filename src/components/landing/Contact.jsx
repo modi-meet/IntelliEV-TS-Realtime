@@ -1,4 +1,9 @@
 import React from 'react';
+import { FaEnvelope, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
+import Card from '../ui/Card';
+import Input from '../ui/Input';
+import TextArea from '../ui/TextArea';
+import Button from '../ui/Button';
 
 const Contact = () => {
   return (
@@ -7,39 +12,29 @@ const Contact = () => {
         <div className="text-center mb-16">
           <h3 className="text-4xl font-extrabold">Join the Revolution</h3>
           <p
-            className="text-lg mt-4"
-            style={{ color: 'var(--text-secondary)' }}
+            className="text-lg mt-4 text-[#6c757d]"
           >
             Have questions or want to partner with us? Reach out!
           </p>
         </div>
-        <div className="info-card rounded-2xl p-8 md:p-12 grid md:grid-cols-2 gap-12 items-center">
+        <Card className="rounded-2xl p-8 md:p-12 grid md:grid-cols-2 gap-12 items-center">
           <div>
             <h4 className="text-2xl font-bold mb-4">Get in Touch</h4>
-            <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
+            <p className="mb-6 text-[#6c757d]">
               We're excited to hear from drivers, developers, and city
               partners who want to build the future of mobility with us.
             </p>
             <div className="space-y-4">
-              <p>
-                <i
-                  className="fa-solid fa-envelope mr-3"
-                  style={{ color: 'var(--accent-green)' }}
-                ></i>{' '}
+              <p className="flex items-center">
+                <FaEnvelope className="mr-3 text-[#20c997]" />{' '}
                 contact@intelliev.network
               </p>
-              <p>
-                <i
-                  className="fa-solid fa-phone mr-3"
-                  style={{ color: 'var(--accent-green)' }}
-                ></i>{' '}
+              <p className="flex items-center">
+                <FaPhone className="mr-3 text-[#20c997]" />{' '}
                 +91 80 1234 5678
               </p>
-              <p>
-                <i
-                  className="fa-solid fa-map-marker-alt mr-3"
-                  style={{ color: 'var(--accent-green)' }}
-                ></i>{' '}
+              <p className="flex items-center">
+                <FaMapMarkerAlt className="mr-3 text-[#20c997]" />{' '}
                 Bengaluru, Karnataka, India
               </p>
             </div>
@@ -49,43 +44,40 @@ const Contact = () => {
               <label htmlFor="name" className="font-semibold block mb-1">
                 Name
               </label>
-              <input
+              <Input
                 type="text"
                 id="name"
                 placeholder="Your Name"
-                className="form-input w-full px-4 py-3 rounded-md shadow-sm"
               />
             </div>
             <div>
               <label htmlFor="email" className="font-semibold block mb-1">
                 Email
               </label>
-              <input
+              <Input
                 type="email"
                 id="email"
                 placeholder="Your Email"
-                className="form-input w-full px-4 py-3 rounded-md shadow-sm"
               />
             </div>
             <div>
               <label htmlFor="message" className="font-semibold block mb-1">
                 Message
               </label>
-              <textarea
+              <TextArea
                 id="message"
                 placeholder="How can we help?"
                 rows="4"
-                className="form-input w-full px-4 py-3 rounded-md shadow-sm"
-              ></textarea>
+              />
             </div>
-            <button
+            <Button
               type="submit"
-              className="w-full btn-primary font-bold px-6 py-3 rounded-lg text-lg"
+              className="w-full text-lg"
             >
               Send Message
-            </button>
+            </Button>
           </form>
-        </div>
+        </Card>
       </div>
     </section>
   );

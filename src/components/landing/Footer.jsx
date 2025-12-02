@@ -1,10 +1,10 @@
 import React from 'react';
+import { FaTwitter, FaLinkedinIn, FaGithub } from 'react-icons/fa';
 
 const Footer = () => {
   return (
     <footer
-      style={{ backgroundColor: '#212529' }}
-      className="text-white py-12"
+      className="text-white py-12 bg-[#212529]"
     >
       <div className="max-w-7xl mx-auto px-6 text-center">
         <div className="flex items-center justify-center gap-2 mb-4">
@@ -49,19 +49,19 @@ const Footer = () => {
             href="#"
             className="text-gray-500 hover:text-white transition-transform duration-300 transform hover:scale-110"
           >
-            <i className="fa-brands fa-twitter"></i>
+            <FaTwitter />
           </a>
           <a
             href="#"
             className="text-gray-500 hover:text-white transition-transform duration-300 transform hover:scale-110"
           >
-            <i className="fa-brands fa-linkedin-in"></i>
+            <FaLinkedinIn />
           </a>
           <a
             href="#"
             className="text-gray-500 hover:text-white transition-transform duration-300 transform hover:scale-110"
           >
-            <i className="fa-brands fa-github"></i>
+            <FaGithub />
           </a>
         </div>
         <p className="text-gray-500">
