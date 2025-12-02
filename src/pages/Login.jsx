@@ -20,7 +20,7 @@ const Login = () => {
   const handleRoleSelect = (selectedRole) => {
     setRole(selectedRole);
     setIsModalOpen(true);
-    setIsLoginMode(true); // Default to login
+    setIsLoginMode(true);
     setNotification({ show: false, message: '', type: '' });
   };
 
@@ -41,9 +41,11 @@ const Login = () => {
 
   const handleSubmit = async () => {
     setLoading(true);
+
     try {
       if (isLoginMode) {
         await loginUser(formData.email, formData.password, role);
+        
         showNotification('Login successful!', 'success');
         setTimeout(() => navigate('/dashboard'), 1000);
       } else {
