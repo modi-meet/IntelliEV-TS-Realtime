@@ -6,6 +6,7 @@ import LiveFeed from '../components/dashboard/LiveFeed';
 import HazardSelectionModal from '../components/dashboard/HazardSelectionModal';
 import AIAnalysisModal from '../components/dashboard/AIAnalysisModal';
 import SOSModal from '../components/dashboard/SOSModal';
+import EmergencyDashboard from './EmergencyDashboard';
 import { auth, db } from '../services/firebase';
 import { collection, addDoc, query, orderBy, onSnapshot, limit, serverTimestamp } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
@@ -28,6 +29,11 @@ const Dashboard = () => {
   const [sosType, setSosType] = useState('Manual');
 
   const navigate = useNavigate();
+
+  // If user is Emergency Responder, render that dashboard instead
+  if (currentUser?.userType === 'emergency') {
+    return <EmergencyDashboard />;
+  }
 
   // Real-time messages listener
   useEffect(() => {
@@ -167,12 +173,34 @@ const Dashboard = () => {
   const handleConfirmSOS = async () => {
     console.log("SOS Triggered!", sosType);
     try {
+      // 1. Send to Messages (for Chat Feed)
       await addDoc(collection(db, "messages"), {
         type: 'hazard',
         senderInfo: { username: currentUser?.username || 'You' },
         timestamp: serverTimestamp(),
         payload: { message: `SOS Alert Triggered! Type: ${sosType}` }
       });
+
+      // 2. Create Actual SOS Alert (for Emergency Dashboard)
+      await addDoc(collection(db, "sos_alerts"), {
+        status: 'active',
+        timestamp: serverTimestamp(),
+        senderInfo: {
+            username: currentUser?.username || 'EV User',
+            regNumber: currentUser?.regNumber || 'KA-05-EV-2024',
+            uid: currentUser?.uid || 'anonymous'
+        },
+        location: userLocation || { lat: 12.9716, lng: 77.5946 },
+        triggerMethod: sosType,
+        vehicleData: {
+            // Simulating severe accident data for demonstration
+            g_force: sosType.includes('AI') ? 5.2 : 1.5, 
+            delta_v: sosType.includes('AI') ? 45 : 10,
+            airbags_deployed: sosType.includes('AI'),
+            rollover_detected: false
+        }
+      });
+
     } catch (error) {
       console.error("Error sending SOS:", error);
     }
