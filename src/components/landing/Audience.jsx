@@ -15,7 +15,7 @@ const Audience = () => {
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-8">
-          <Card>
+          <Card variant="landing">
             <h4 className="text-xl font-bold mb-3">For EV Drivers</h4>
             <ul
               className="space-y-2 list-disc list-inside text-[#6c757d]"
@@ -26,7 +26,7 @@ const Audience = () => {
               <li>Be a part of a helpful driver community.</li>
             </ul>
           </Card>
-          <Card>
+          <Card variant="landing">
             <h4 className="text-xl font-bold mb-3">For Emergency Services</h4>
             <ul
               className="space-y-2 list-disc list-inside text-[#6c757d]"
@@ -37,7 +37,7 @@ const Audience = () => {
               <li>Coordinate with other responders in real-time.</li>
             </ul>
           </Card>
-          <Card>
+          <Card variant="landing">
             <h4 className="text-xl font-bold mb-3">For City Planners</h4>
             <ul
               className="space-y-2 list-disc list-inside text-[#6c757d]"

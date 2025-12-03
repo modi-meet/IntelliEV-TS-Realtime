@@ -54,13 +54,13 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-h1 {
+.main-container h1 {
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
 }
 
-p {
+.main-container p {
   font-size: 1.1rem;
   color: #666;
   margin-bottom: 2.5rem;
@@ -267,4 +267,77 @@ p {
 }
 #notification-toast.error {
   background-color: var(--secondary-color);
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Leaflet Marker Styles */
+.charging-marker {
+  background-color: #2563eb;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 5px #2563eb;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  transition: transform 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.charging-marker:hover {
+  transform: scale(1.15);
+}
+
+.recommended-marker {
+  background-color: #16a34a;
+  box-shadow: 0 0 5px #16a34a;
+}
+
+.traffic-light-marker {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 20px rgba(220, 38, 38, 0);
+  }
+}
+
+/* Hide scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

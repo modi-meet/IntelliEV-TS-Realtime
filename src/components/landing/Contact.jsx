@@ -17,7 +17,7 @@ const Contact = () => {
             Have questions or want to partner with us? Reach out!
           </p>
         </div>
-        <Card className="rounded-2xl p-8 md:p-12 grid md:grid-cols-2 gap-12 items-center">
+        <Card variant="landing" className="rounded-2xl p-8 md:p-12 grid md:grid-cols-2 gap-12 items-center">
           <div>
             <h4 className="text-2xl font-bold mb-4">Get in Touch</h4>
             <p className="mb-6 text-[#6c757d]">

@@ -3,13 +3,7 @@ import React from 'react';
 const Input = ({ className = '', ...props }) => {
   return (
     <input
-      className={`
-        w-full px-4 py-3 rounded-md shadow-sm 
-        bg-white border border-[#dee2e6] text-[#212529] 
-        transition-all duration-300 ease-out 
-        focus:border-[#20c997] focus:ring-4 focus:ring-[rgba(32,201,151,0.2)] focus:outline-none
-        ${className}
-      `}
+      className={`w-full px-4 py-3 rounded-md shadow-sm bg-white border border-gray-300 text-gray-800 transition-colors duration-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 focus:outline-none ${className}`}
       {...props}
     />
   );
