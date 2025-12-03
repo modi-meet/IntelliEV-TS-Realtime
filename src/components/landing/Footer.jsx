@@ -20,13 +20,13 @@ const Footer = () => {
         </div>
         <div className="flex justify-center space-x-6 mb-6 text-lg text-gray-400">
           <a
-            href="#features"
+            href="/#features"
             className="hover:text-white transition-colors duration-300"
           >
             Features
           </a>
           <a
-            href="#audience"
+            href="/#audience"
             className="hover:text-white transition-colors duration-300"
           >
             Who It's For
