@@ -1,18 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser, registerUser } from '../services/authServices';
+import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/landing/Header';
 import Footer from '../components/landing/Footer';
 import { FaCarSide, FaTruckMedical } from 'react-icons/fa6';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const [role, setRole] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: '', type: '' });
   
+  useEffect(() => {
+    if (currentUser) {
+      navigate('/dashboard');
+    }
+  }, [currentUser, navigate]);
+
   const [formData, setFormData] = useState({
     username: '',
     email: '',

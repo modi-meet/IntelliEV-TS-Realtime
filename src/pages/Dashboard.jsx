@@ -6,10 +6,13 @@ import LiveFeed from '../components/dashboard/LiveFeed';
 import HazardSelectionModal from '../components/dashboard/HazardSelectionModal';
 import AIAnalysisModal from '../components/dashboard/AIAnalysisModal';
 import SOSModal from '../components/dashboard/SOSModal';
-import { auth } from '../services/firebase';
+import { auth, db } from '../services/firebase';
+import { collection, addDoc, query, orderBy, onSnapshot, limit, serverTimestamp } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const Dashboard = () => {
+  const { currentUser } = useAuth();
   const [userLocation, setUserLocation] = useState(null);
   const [messages, setMessages] = useState([]);
   const [markers, setMarkers] = useState([]);
@@ -17,7 +20,6 @@ const Dashboard = () => {
   const [trafficSignals, setTrafficSignals] = useState([]);
   const [destination, setDestination] = useState(null);
   const [vehicleStatus, setVehicleStatus] = useState({ battery: 88, range: 280, status: 'Online' });
-  const [currentUser, setCurrentUser] = useState({ username: 'Test user', regNumber: 'KA51MA8686' });
   
   // Modal States
   const [isHazardModalOpen, setIsHazardModalOpen] = useState(false);
@@ -26,6 +28,27 @@ const Dashboard = () => {
   const [sosType, setSosType] = useState('Manual');
 
   const navigate = useNavigate();
+
+  // Real-time messages listener
+  useEffect(() => {
+    const q = query(
+      collection(db, "messages"),
+      orderBy("timestamp", "desc"),
+      limit(50)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const msgs = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setMessages(msgs);
+    }, (error) => {
+      console.error("Error fetching messages:", error);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   // Mock data for now
   useEffect(() => {
@@ -47,28 +70,6 @@ const Dashboard = () => {
     } else {
       setUserLocation({ lat: 12.9716, lng: 77.5946 });
     }
-
-    // Mock messages
-    setMessages([
-      {
-        type: 'hazard',
-        senderInfo: { username: 'Test user' },
-        timestamp: { seconds: Date.now() / 1000 },
-        payload: { message: 'Speed breakers without markings reported near MG Road.' }
-      },
-      {
-        type: 'hazard',
-        senderInfo: { username: 'Test user' },
-        timestamp: { seconds: Date.now() / 1000 - 120 },
-        payload: { message: 'Potholes reported on Indiranagar 100ft Road.' }
-      },
-      {
-        type: 'info',
-        senderInfo: { username: 'Test user' },
-        timestamp: { seconds: Date.now() / 1000 - 3600 },
-        payload: { message: 'Heavy traffic alert at Silk Board junction!' }
-      }
-    ]);
 
     // Mock markers (e.g., charging stations)
     setMarkers([
@@ -125,58 +126,70 @@ const Dashboard = () => {
     }
   };
 
-  const handleHazardSelect = (hazardId) => {
+  const handleHazardSelect = async (hazardId) => {
     setIsHazardModalOpen(false);
     if (hazardId === 'accident') {
       setIsAIModalOpen(true);
     } else {
       // Report other hazards directly
-      const newMsg = {
-        type: 'hazard',
-        senderInfo: { username: 'You' },
-        timestamp: { seconds: Date.now() / 1000 },
-        payload: { message: `${hazardId} reported at current location.` }
-      };
-      setMessages(prev => [newMsg, ...prev]);
+      try {
+        await addDoc(collection(db, "messages"), {
+          type: 'hazard',
+          senderInfo: { username: currentUser?.username || 'test user' },
+          timestamp: serverTimestamp(),
+          payload: { message: `${hazardId} reported at current location.` }
+        });
+      } catch (error) {
+        console.error("Error sending hazard:", error);
+      }
     }
   };
 
-  const handleAIReport = (reportData) => {
+  const handleAIReport = async (reportData) => {
     console.log("AI Report:", reportData);
     if (reportData.severity > 6) {
         setSosType(`AI Analysis (Severity: ${reportData.severity}/10)`);
         setIsSOSModalOpen(true);
     } else {
-        const newMsg = {
+        try {
+          await addDoc(collection(db, "messages"), {
             type: 'hazard',
-            senderInfo: { username: 'You' },
-            timestamp: { seconds: Date.now() / 1000 },
+            senderInfo: { username: currentUser?.username || 'You' },
+            timestamp: serverTimestamp(),
             payload: { message: `AI Detected Hazard. Severity: ${reportData.severity}/10` }
-        };
-        setMessages(prev => [newMsg, ...prev]);
+          });
+        } catch (error) {
+          console.error("Error sending AI report:", error);
+        }
     }
   };
 
-  const handleConfirmSOS = () => {
+  const handleConfirmSOS = async () => {
     console.log("SOS Triggered!", sosType);
-    const newMsg = {
+    try {
+      await addDoc(collection(db, "messages"), {
         type: 'hazard',
-        senderInfo: { username: 'You' },
-        timestamp: { seconds: Date.now() / 1000 },
+        senderInfo: { username: currentUser?.username || 'You' },
+        timestamp: serverTimestamp(),
         payload: { message: `SOS Alert Triggered! Type: ${sosType}` }
-    };
-    setMessages(prev => [newMsg, ...prev]);
+      });
+    } catch (error) {
+      console.error("Error sending SOS:", error);
+    }
     setIsSOSModalOpen(false);
   };
 
-  const handleSendMessage = (text) => {
-    const newMsg = {
+  const handleSendMessage = async (text) => {
+    try {
+      await addDoc(collection(db, "messages"), {
         type: 'info',
-        senderInfo: { username: 'You' },
-        timestamp: { seconds: Date.now() / 1000 },
+        senderInfo: { username: currentUser?.username || 'You' },
+        timestamp: serverTimestamp(),
         payload: { message: text }
-    };
-    setMessages(prev => [newMsg, ...prev]);
+      });
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
   };
 
   const handleCloseNavigation = () => {

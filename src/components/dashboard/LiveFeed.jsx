@@ -31,7 +31,7 @@ const LiveFeed = ({ messages, onSendMessage }) => {
       >
         {messages.map((msg, index) => (
           <div
-            key={index}
+            key={msg.id || index}
             className={`mb-2 p-2.5 text-xs rounded-md border-l-2 shadow-sm ${
               msg.type === 'hazard' ? 'border-orange-500 bg-orange-50' : 'border-purple-500 bg-purple-50'
             }`}
