@@ -80,6 +80,31 @@ Follow these steps to set up the project locally:
 *   `src/services/`: Firebase configuration and API handling.
 *   `src/contexts/`: Global state management (AuthContext).
 
+```text
+                      ┌──────────────────────┐
+                      │      Vercel Frontend │
+                      │    (React + TS)      │
+                      └──────────┬───────────┘
+                                 │
+                        HTTPS / REST / Webhook
+                                 │
+         ┌───────────────────────┴───────────────────────┐
+         │                                               │
+┌──────────────────────┐                    ┌─────────────────────────┐
+│ Firebase Firestore   │  <-- realtime -->  │ Firebase Realtime DB    │
+│ Firebase Auth        │                    └─────────────────────────┘
+└──────────┬───────────┘
+           │  triggers
+           │
+ ┌─────────▼──────────┐
+ │ Node Microservice  │  (Vercel Serverless Function)
+ │ "Incident Orchestrator"  
+ │ - Assign responder  
+ │ - Process SOS  
+ │ - Log analytics   
+ └─────────────────────┘
+```
+
 ---
 
 *Built with ❤️ for safer roads and smarter cities.*
