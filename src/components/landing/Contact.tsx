@@ -57,7 +57,7 @@ const Contact = () => {
               <Input
                 type="email"
                 id="email"
-                placeholder="Your Email"
+                placeholder="your@email.com"
               />
             </div>
             <div>
@@ -66,14 +66,11 @@ const Contact = () => {
               </label>
               <TextArea
                 id="message"
+                rows={4}
                 placeholder="How can we help?"
-                rows="4"
               />
             </div>
-            <Button
-              type="submit"
-              className="w-full text-lg"
-            >
+            <Button type="submit" className="w-full">
               Send Message
             </Button>
           </form>

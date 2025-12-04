@@ -2,12 +2,18 @@ import React, { useEffect, useState } from 'react';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
 
-const SOSModal = ({ isOpen, onClose, onConfirm, type = 'Manual' }) => {
+interface SOSModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  type?: string;
+}
+
+const SOSModal = ({ isOpen, onClose, onConfirm, type = 'Manual' }: SOSModalProps) => {
   const [timeLeft, setTimeLeft] = useState(15);
   const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
-    let interval = null;
     if (isOpen) {
       setTimeLeft(15);
       setIsActive(true);
@@ -17,7 +23,7 @@ const SOSModal = ({ isOpen, onClose, onConfirm, type = 'Manual' }) => {
   }, [isOpen]);
 
   useEffect(() => {
-    let interval = null;
+    let interval: NodeJS.Timeout | null = null;
     if (isActive && timeLeft > 0) {
       interval = setInterval(() => {
         setTimeLeft((prev) => prev - 1);
@@ -26,7 +32,9 @@ const SOSModal = ({ isOpen, onClose, onConfirm, type = 'Manual' }) => {
       onConfirm();
       setIsActive(false);
     }
-    return () => clearInterval(interval);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [isActive, timeLeft, onConfirm]);
 
   if (!isOpen) return null;

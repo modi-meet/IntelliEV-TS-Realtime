@@ -1,6 +1,12 @@
 import React from 'react';
 
-const HazardSelectionModal = ({ isOpen, onClose, onSelect }) => {
+interface HazardSelectionModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSelect: (hazardId: string) => void;
+}
+
+const HazardSelectionModal = ({ isOpen, onClose, onSelect }: HazardSelectionModalProps) => {
   if (!isOpen) return null;
 
   const hazards = [

@@ -2,19 +2,29 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  User,
 } from "firebase/auth";
 import {
   doc,
   setDoc,
-  getDoc
+  getDoc,
+  DocumentData
 } from "firebase/firestore";
 
 import { auth, db } from "./firebase";
 
+interface RegisterUserParams {
+  email: string;
+  password: string;
+  username: string;
+  regNumber: string;
+  userType: 'ev' | 'emergency';
+}
+
 /**
  * Handles the user signup process.
  */
-export async function registerUser({ email, password, username, regNumber, userType }) {
+export async function registerUser({ email, password, username, regNumber, userType }: RegisterUserParams): Promise<User> {
   if (!email || !password || !username || !regNumber) {
     throw new Error("Please fill all fields.");
   }
@@ -37,7 +47,7 @@ export async function registerUser({ email, password, username, regNumber, userT
 
     return userCredential.user;
 
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Sign up failed: ${error.message}`);
   }
 }
@@ -45,7 +55,7 @@ export async function registerUser({ email, password, username, regNumber, userT
 /**
  * Handles the user login process.
  */
-export async function loginUser(email, password, expectedRole) {
+export async function loginUser(email: string, password: string, expectedRole?: string): Promise<DocumentData> {
   if (!email || !password) {
     throw new Error("Email and password required");
   }
@@ -74,7 +84,7 @@ export async function loginUser(email, password, expectedRole) {
 
     return userData;
 
-  } catch (err) {
+  } catch (err: any) {
     throw new Error(err.message);
   }
 }
@@ -82,10 +92,10 @@ export async function loginUser(email, password, expectedRole) {
 /**
  * Logs out current user.
  */
-export async function logoutUser() {
+export async function logoutUser(): Promise<void> {
   try {
     await signOut(auth);
-  } catch (err) {
+  } catch (err: any) {
     throw new Error("Logout failed: " + err.message);
   }
 }

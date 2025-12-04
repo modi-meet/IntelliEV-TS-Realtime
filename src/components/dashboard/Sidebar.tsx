@@ -2,7 +2,23 @@ import React from 'react';
 import { FaTriangleExclamation, FaRoadBarrier, FaChargingStation, FaTrafficLight } from 'react-icons/fa6';
 import Card from '../ui/Card';
 
-const Sidebar = ({ onEmergencyClick, onHazardClick, onChargingClick, onToggleTraffic, vehicleStatus }) => {
+interface VehicleStatus {
+  battery: number;
+  range: number;
+  speed?: number;
+  temp?: number;
+  status: string;
+}
+
+interface SidebarProps {
+  onEmergencyClick: () => void;
+  onHazardClick: () => void;
+  onChargingClick: () => void;
+  onToggleTraffic: () => void;
+  vehicleStatus: VehicleStatus;
+}
+
+const Sidebar = ({ onEmergencyClick, onHazardClick, onChargingClick, onToggleTraffic, vehicleStatus }: SidebarProps) => {
   return (
     <div className="flex flex-col gap-3">
       <Card className="bg-white p-3 rounded-xl shadow-lg">

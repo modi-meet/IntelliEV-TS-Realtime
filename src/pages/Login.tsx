@@ -9,7 +9,7 @@ import { FaCarSide, FaTruckMedical } from 'react-icons/fa6';
 const Login = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const [role, setRole] = useState(null);
+  const [role, setRole] = useState<'ev' | 'emergency' | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -28,7 +28,7 @@ const Login = () => {
     regNumber: ''
   });
 
-  const handleRoleSelect = (selectedRole) => {
+  const handleRoleSelect = (selectedRole: 'ev' | 'emergency') => {
     setRole(selectedRole);
     setIsModalOpen(true);
     setIsLoginMode(true);
@@ -41,11 +41,11 @@ const Login = () => {
     setFormData({ username: '', email: '', password: '', regNumber: '' });
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-  const showNotification = (message, type) => {
+  const showNotification = (message: string, type: string) => {
     setNotification({ show: true, message, type });
     setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
   };
@@ -55,11 +55,14 @@ const Login = () => {
 
     try {
       if (isLoginMode) {
-        await loginUser(formData.email, formData.password, role);
+        await loginUser(formData.email, formData.password, role || undefined);
         
         showNotification('Login successful!', 'success');
         setTimeout(() => navigate('/dashboard'), 1000);
       } else {
+        if (!role) {
+          throw new Error("Please select a role");
+        }
         await registerUser({
           email: formData.email,
           password: formData.password,
@@ -70,7 +73,7 @@ const Login = () => {
         showNotification('Registration successful!', 'success');
         setTimeout(() => navigate('/dashboard'), 1000);
       }
-    } catch (error) {
+    } catch (error: any) {
       showNotification(error.message, 'error');
     } finally {
       setLoading(false);

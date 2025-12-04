@@ -16,7 +16,17 @@ let DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
-const RecenterAutomatically = ({ lat, lng }) => {
+interface Coords {
+  lat: number;
+  lng: number;
+}
+
+interface RecenterAutomaticallyProps {
+  lat: number;
+  lng: number;
+}
+
+const RecenterAutomatically = ({ lat, lng }: RecenterAutomaticallyProps) => {
   const map = useMap();
 
   useEffect(() => {
@@ -26,9 +36,14 @@ const RecenterAutomatically = ({ lat, lng }) => {
   return null;
 };
 
-const RoutingControl = ({ start, end }) => {
+interface RoutingControlProps {
+  start: Coords;
+  end: Coords;
+}
+
+const RoutingControl = ({ start, end }: RoutingControlProps) => {
   const map = useMap();
-  const routingControlRef = useRef(null);
+  const routingControlRef = useRef<any>(null);
 
   useEffect(() => {
     if (!start || !end) return;
@@ -37,7 +52,7 @@ const RoutingControl = ({ start, end }) => {
       map.removeControl(routingControlRef.current);
     }
 
-    routingControlRef.current = L.Routing.control({
+    routingControlRef.current = (L as any).Routing.control({
       waypoints: [
         L.latLng(start.lat, start.lng),
         L.latLng(end.lat, end.lng)
@@ -84,8 +99,44 @@ const createNearbyEVIcon = () => L.divIcon({
   iconAnchor: [8, 8]
 });
 
-const MapComponent = ({ userLocation, markers, nearbyEVs, trafficSignals, destination, onCloseNavigation, ambulanceStatus }) => {
-  const [position, setPosition] = useState(null);
+interface MarkerData {
+  lat: number;
+  lng: number;
+  title: string;
+  description: string;
+}
+
+interface EVData {
+  lat: number;
+  lng: number;
+  regNumber: string;
+  battery: number;
+}
+
+interface TrafficSignal {
+  name: string;
+  coords: Coords;
+  state: string;
+}
+
+interface AmbulanceStatus {
+  id: string;
+  status: string;
+  eta: number;
+}
+
+interface MapComponentProps {
+  userLocation: Coords | null;
+  markers: MarkerData[];
+  nearbyEVs: EVData[];
+  trafficSignals: TrafficSignal[];
+  destination: Coords | null;
+  onCloseNavigation: () => void;
+  ambulanceStatus: AmbulanceStatus | null;
+}
+
+const MapComponent = ({ userLocation, markers, nearbyEVs, trafficSignals, destination, onCloseNavigation, ambulanceStatus }: MapComponentProps) => {
+  const [position, setPosition] = useState<[number, number] | null>(null);
 
   useEffect(() => {
     if (userLocation) {
@@ -166,7 +217,7 @@ const MapComponent = ({ userLocation, markers, nearbyEVs, trafficSignals, destin
         ))}
 
         {/* Routing */}
-        {destination && (
+        {destination && userLocation && (
             <RoutingControl start={userLocation} end={destination} />
         )}
 

@@ -47,8 +47,9 @@ const Header = () => {
           <Button
             to="/login"
             className="font-semibold"
+            href={undefined}
           >
-            Join The Network
+            Login
           </Button>
         </div>
       </div>

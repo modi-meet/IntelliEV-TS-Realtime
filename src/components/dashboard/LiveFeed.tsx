@@ -3,9 +3,28 @@ import Card from '../ui/Card';
 import Button from '../ui/Button';
 import TextArea from '../ui/TextArea';
 
-const LiveFeed = ({ messages, onSendMessage }) => {
+interface Message {
+  id?: string;
+  type?: string;
+  senderInfo?: {
+    username: string;
+  };
+  timestamp?: {
+    seconds: number;
+  };
+  payload?: {
+    message: string;
+  };
+}
+
+interface LiveFeedProps {
+  messages: Message[];
+  onSendMessage: (message: string) => void;
+}
+
+const LiveFeed = ({ messages, onSendMessage }: LiveFeedProps) => {
   const [newMessage, setNewMessage] = useState('');
-  const feedRef = useRef(null);
+  const feedRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (feedRef.current) {

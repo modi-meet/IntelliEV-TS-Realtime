@@ -11,6 +11,32 @@ import Card from '../components/ui/Card';
 import { FaTruckMedical, FaTriangleExclamation, FaCarBurst , FaBrain, FaCommentDots } from 'react-icons/fa6';
 import L from 'leaflet';
 
+interface VehicleData {
+  g_force: number;
+  delta_v: number;
+  airbags_deployed: boolean;
+  rollover_detected: boolean;
+}
+
+interface Alert {
+  id: string;
+  location: { lat: number; lng: number };
+  severity: string;
+  [key: string]: any;
+}
+
+interface Ambulance {
+  id: string;
+  location: { lat: number; lng: number };
+  [key: string]: any;
+}
+
+interface PriorityAlert {
+  show: boolean;
+  message: string;
+  type: string;
+}
+
 const EmergencyDashboard = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
@@ -19,17 +45,17 @@ const EmergencyDashboard = () => {
   const [activeEVsCount, setActiveEVsCount] = useState(0);
   const [activeAmbulanceCount, setActiveAmbulanceCount] = useState(0);
   const [activeAlertsCount, setActiveAlertsCount] = useState(0);
-  const [alertsFeed, setAlertsFeed] = useState([]);
-  const [sosAlerts, setSosAlerts] = useState([]);
-  const [ambulanceFleet, setAmbulanceFleet] = useState([]);
-  const [suggestions, setSuggestions] = useState([]);
-  const [selectedSosAlert, setSelectedSosAlert] = useState(null);
+  const [alertsFeed, setAlertsFeed] = useState<any[]>([]);
+  const [sosAlerts, setSosAlerts] = useState<Alert[]>([]);
+  const [ambulanceFleet, setAmbulanceFleet] = useState<Ambulance[]>([]);
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [selectedSosAlert, setSelectedSosAlert] = useState<Alert | null>(null);
   const [isDispatchModalOpen, setIsDispatchModalOpen] = useState(false);
-  const [activeRoute, setActiveRoute] = useState(null);
-  const [priorityAlert, setPriorityAlert] = useState({ show: false, message: '', type: '' });
+  const [activeRoute, setActiveRoute] = useState<any>(null);
+  const [priorityAlert, setPriorityAlert] = useState<PriorityAlert>({ show: false, message: '', type: '' });
 
   // --- Helpers ---
-  const getAccidentSeverityJS = (vehicleData) => {
+  const getAccidentSeverityJS = (vehicleData: VehicleData) => {
     if (!vehicleData) return "Medium";
     const { g_force, delta_v, airbags_deployed, rollover_detected } = vehicleData;
     let score = 0;
@@ -44,12 +70,12 @@ const EmergencyDashboard = () => {
     return "Low";
   };
 
-  const compareSeverity = (a, b) => {
-    const severities = { High: 3, Medium: 2, Low: 1 };
+  const compareSeverity = (a: Alert, b: Alert) => {
+    const severities: { [key: string]: number } = { High: 3, Medium: 2, Low: 1 };
     return (severities[b.severity] || 0) - (severities[a.severity] || 0);
   };
 
-  const findClosestAmbulance = (alert, ambulances) => {
+  const findClosestAmbulance = (alert: Alert, ambulances: Ambulance[]) => {
     if (ambulances.length === 0) return null;
     return ambulances
       .map((amb) => ({
@@ -59,7 +85,7 @@ const EmergencyDashboard = () => {
       .sort((a, b) => a.distance - b.distance)[0];
   };
 
-  const showPriorityAlert = (message, type) => {
+  const showPriorityAlert = (message: string, type: string) => {
     setPriorityAlert({ show: true, message, type });
     setTimeout(() => setPriorityAlert({ show: false, message: '', type: '' }), 4000);
   };
@@ -84,9 +110,10 @@ const EmergencyDashboard = () => {
     const unsubSOS = onSnapshot(sosQuery, (snapshot) => {
       const alerts = snapshot.docs.map(doc => ({ 
         id: doc.id, 
-        ...doc.data(),
-        severity: getAccidentSeverityJS(doc.data().vehicleData)
-      }));
+        location: doc.data().location,
+        severity: getAccidentSeverityJS(doc.data().vehicleData),
+        ...doc.data()
+      })) as Alert[];
       setSosAlerts(alerts);
       setActiveAlertsCount(alerts.length);
     });
@@ -95,7 +122,7 @@ const EmergencyDashboard = () => {
     const ambulancesRef = ref(rtdb, "ambulances");
     const unsubAmbulances = onValue(ambulancesRef, (snapshot) => {
       const data = snapshot.val() || {};
-      const fleet = Object.values(data);
+      const fleet = Object.values(data) as Ambulance[];
       setAmbulanceFleet(fleet);
       setActiveAmbulanceCount(fleet.length);
     });
@@ -108,9 +135,8 @@ const EmergencyDashboard = () => {
     };
   }, []);
 
-  // Logic to handle alerts update (Suggestions & Priority Alert)
+  // Logic to handle alerts update (Suggestions)
   useEffect(() => {
-    // 1. Generate Suggestions
     if (sosAlerts.length > 1) {
       let availableAmbulances = ambulanceFleet.filter(a => a.status === "available");
       let unassignedAlerts = [...sosAlerts].sort(compareSeverity);
@@ -132,8 +158,10 @@ const EmergencyDashboard = () => {
     } else {
       setSuggestions([]);
     }
+  }, [sosAlerts, ambulanceFleet]);
 
-    // 2. Handle Selection & Alerts
+  // Logic to handle Selection & Alerts
+  useEffect(() => {
     if (sosAlerts.length === 0) {
       setSelectedSosAlert(null);
     } else if (!isDispatchModalOpen) {
@@ -147,7 +175,7 @@ const EmergencyDashboard = () => {
         showPriorityAlert(`Multiple incidents (${sosAlerts.length})! AI suggestions generated.`, "bg-orange-500");
       }
     }
-  }, [sosAlerts, ambulanceFleet, isDispatchModalOpen]);
+  }, [sosAlerts, isDispatchModalOpen]);
 
 
   // --- Actions ---
@@ -167,6 +195,7 @@ const EmergencyDashboard = () => {
       status: "available",
       type: "Advanced Life Support",
     });
+    showPriorityAlert(`Ambulance ${ambulanceId} added to simulation`, "bg-blue-600");
   };
 
   const handleSimulateSOS = async () => {
@@ -196,7 +225,7 @@ const EmergencyDashboard = () => {
     }
   };
 
-  const handleDispatch = async (sosId, ambulanceId) => {
+  const handleDispatch = async (sosId: string, ambulanceId: string) => {
     // Update Firestore
     const sosRef = doc(db, "sos_alerts", sosId);
     await updateDoc(sosRef, {
@@ -205,10 +234,12 @@ const EmergencyDashboard = () => {
     });
 
     // Update RTDB
-    const updates = {};
+    const updates: any = {};
     const alert = sosAlerts.find(a => a.id === sosId);
     updates[`/ambulances/${ambulanceId}/status`] = "en-route";
-    updates[`/ambulances/${ambulanceId}/destination`] = alert.location;
+    if (alert) {
+      updates[`/ambulances/${ambulanceId}/destination`] = alert.location;
+    }
     await update(ref(rtdb), updates);
 
     // Draw Route
@@ -224,13 +255,13 @@ const EmergencyDashboard = () => {
     setSelectedSosAlert(null);
   };
 
-  const handleClearSOS = async (sosId) => {
+  const handleClearSOS = async (sosId: string) => {
     await updateDoc(doc(db, "sos_alerts", sosId), { status: "resolved" });
     setSelectedSosAlert(null);
     setActiveRoute(null);
   };
 
-  const openDispatchModal = (alert) => {
+  const openDispatchModal = (alert: Alert) => {
     setSelectedSosAlert(alert);
     setIsDispatchModalOpen(true);
   };
@@ -436,7 +467,7 @@ const EmergencyDashboard = () => {
               </Button>
               <Button 
                 onClick={() => {
-                  const selectedRadio = document.querySelector('input[name="ambulance"]:checked');
+                  const selectedRadio = document.querySelector('input[name="ambulance"]:checked') as HTMLInputElement;
                   if (selectedRadio) {
                     handleDispatch(selectedSosAlert.id, selectedRadio.value);
                   }

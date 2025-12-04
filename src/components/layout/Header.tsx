@@ -4,7 +4,14 @@ import { auth } from '../../services/firebase';
 import { signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 
-const Header = ({ user }) => {
+interface HeaderProps {
+  user: {
+    username?: string;
+    regNumber?: string;
+  } | null;
+}
+
+const Header = ({ user }: HeaderProps) => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {

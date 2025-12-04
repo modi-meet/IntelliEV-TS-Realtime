@@ -12,14 +12,41 @@ import { collection, addDoc, query, orderBy, onSnapshot, limit, serverTimestamp 
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
+interface Location {
+  lat: number;
+  lng: number;
+}
+
+interface MarkerData {
+  lat: number;
+  lng: number;
+  title: string;
+  description: string;
+}
+
+interface EVData {
+  lat: number;
+  lng: number;
+  regNumber: string;
+  battery: number;
+}
+
+interface Message {
+  id?: string;
+  type: string;
+  senderInfo: { username: string };
+  timestamp: any;
+  payload: { message: string };
+}
+
 const Dashboard = () => {
   const { currentUser } = useAuth();
-  const [userLocation, setUserLocation] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [markers, setMarkers] = useState([]);
-  const [nearbyEVs, setNearbyEVs] = useState([]);
-  const [trafficSignals, setTrafficSignals] = useState([]);
-  const [destination, setDestination] = useState(null);
+  const [userLocation, setUserLocation] = useState<Location | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [markers, setMarkers] = useState<MarkerData[]>([]);
+  const [nearbyEVs, setNearbyEVs] = useState<EVData[]>([]);
+  const [trafficSignals, setTrafficSignals] = useState<any[]>([]);
+  const [destination, setDestination] = useState<Location | null>(null);
   const [vehicleStatus, setVehicleStatus] = useState({ battery: 88, range: 280, status: 'Online' });
   
   // Modal States
@@ -47,7 +74,7 @@ const Dashboard = () => {
       const msgs = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
-      }));
+      })) as Message[];
       setMessages(msgs);
     }, (error) => {
       console.error("Error fetching messages:", error);
@@ -132,7 +159,7 @@ const Dashboard = () => {
     }
   };
 
-  const handleHazardSelect = async (hazardId) => {
+  const handleHazardSelect = async (hazardId: string) => {
     setIsHazardModalOpen(false);
     if (hazardId === 'accident') {
       setIsAIModalOpen(true);
@@ -151,7 +178,7 @@ const Dashboard = () => {
     }
   };
 
-  const handleAIReport = async (reportData) => {
+  const handleAIReport = async (reportData: any) => {
     console.log("AI Report:", reportData);
     if (reportData.severity > 6) {
         setSosType(`AI Analysis (Severity: ${reportData.severity}/10)`);
@@ -207,7 +234,7 @@ const Dashboard = () => {
     setIsSOSModalOpen(false);
   };
 
-  const handleSendMessage = async (text) => {
+  const handleSendMessage = async (text: string) => {
     try {
       await addDoc(collection(db, "messages"), {
         type: 'info',
@@ -226,7 +253,7 @@ const Dashboard = () => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
-      <Header user={currentUser} />
+      <Header user={currentUser as any} />
 
       <div className="flex-grow grid grid-cols-1 lg:grid-cols-5 gap-3 p-2 overflow-hidden">
         {/* Left Column: Network Alerts & Vehicle Status */}
@@ -249,6 +276,7 @@ const Dashboard = () => {
             trafficSignals={trafficSignals}
             destination={destination}
             onCloseNavigation={handleCloseNavigation}
+            ambulanceStatus={null}
           />
         </div>
 
