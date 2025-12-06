@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaTwitter, FaLinkedinIn, FaGithub } from 'react-icons/fa';
+import { scrollToSection } from '../../utils/scroll';
 
 const Footer = () => {
   return (
@@ -21,12 +22,14 @@ const Footer = () => {
         <div className="flex justify-center space-x-6 mb-6 text-lg text-gray-400">
           <a
             href="/#features"
+            onClick={(e) => scrollToSection(e, 'features')}
             className="hover:text-white transition-colors duration-300"
           >
             Features
           </a>
           <a
             href="/#audience"
+            onClick={(e) => scrollToSection(e, 'audience')}
             className="hover:text-white transition-colors duration-300"
           >
             Who It's For

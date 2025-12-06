@@ -79,13 +79,13 @@ const SOSModal = ({ isOpen, onClose, onConfirm, type = 'Manual' }: SOSModalProps
           <div className="flex gap-3">
             <button 
               onClick={onClose}
-              className="flex-1 py-2.5 bg-gray-100 text-gray-600 font-medium rounded-lg hover:bg-gray-200 transition-colors"
+              className="flex-1 py-2.5 bg-gray-100 text-gray-600 font-medium rounded-lg hover:bg-gray-200 transition-colors click-animate"
             >
               Cancel
             </button>
             <button 
               onClick={onConfirm}
-              className="flex-1 py-2.5 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-colors"
+              className="flex-1 py-2.5 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-colors click-animate"
             >
               Send Now
             </button>

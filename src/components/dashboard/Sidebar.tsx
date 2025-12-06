@@ -28,28 +28,28 @@ const Sidebar = ({ onEmergencyClick, onHazardClick, onChargingClick, onToggleTra
         <div className="grid grid-cols-2 gap-2">
           <button
             onClick={onEmergencyClick}
-            className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg font-medium flex flex-col items-center justify-center gap-1 h-16"
+            className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg font-medium flex flex-col items-center justify-center gap-1 h-16 transition-all click-animate"
           >
             <FaTriangleExclamation className="text-lg" />
             <span className="text-xs">SOS</span>
           </button>
           <button
             onClick={onHazardClick}
-            className="bg-orange-400 hover:bg-orange-500 text-white p-2 rounded-lg font-medium flex flex-col items-center justify-center gap-1 h-16"
+            className="bg-orange-400 hover:bg-orange-500 text-white p-2 rounded-lg font-medium flex flex-col items-center justify-center gap-1 h-16 transition-all click-animate"
           >
             <FaRoadBarrier className="text-lg" />
             <span className="text-xs">Hazard</span>
           </button>
           <button
             onClick={onChargingClick}
-            className="bg-sky-400 hover:bg-sky-500 text-white p-2 rounded-lg font-medium flex flex-col items-center justify-center gap-1 h-16"
+            className="bg-sky-400 hover:bg-sky-500 text-white p-2 rounded-lg font-medium flex flex-col items-center justify-center gap-1 h-16 transition-all click-animate"
           >
             <FaChargingStation className="text-lg" />
             <span className="text-xs">Charging</span>
           </button>
           <button
             onClick={onToggleTraffic}
-            className="bg-gray-400 hover:bg-gray-500 text-white p-2 rounded-lg font-medium flex flex-col items-center justify-center gap-1 h-16"
+            className="bg-gray-400 hover:bg-gray-500 text-white p-2 rounded-lg font-medium flex flex-col items-center justify-center gap-1 h-16 transition-all click-animate"
           >
             <FaTrafficLight className="text-lg" />
             <span className="text-xs">Toggle Traffic</span>

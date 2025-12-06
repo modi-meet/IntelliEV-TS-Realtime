@@ -37,7 +37,7 @@ const HazardSelectionModal = ({ isOpen, onClose, onSelect }: HazardSelectionModa
               <button
                 key={hazard.id}
                 onClick={() => onSelect(hazard.id)}
-                className="w-full py-3 px-4 rounded-lg text-sm font-medium text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-colors text-center"
+                className="w-full py-3 px-4 rounded-lg text-sm font-medium text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-colors text-center click-animate"
               >
                 {hazard.label}
               </button>
@@ -45,7 +45,7 @@ const HazardSelectionModal = ({ isOpen, onClose, onSelect }: HazardSelectionModa
           </div>
           <button
             onClick={onClose}
-            className="w-full mt-4 py-3 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-colors"
+            className="w-full mt-4 py-3 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-colors click-animate"
           >
             Cancel
           </button>

@@ -362,3 +362,21 @@
     box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
   }
 }
+
+/* Smooth Scrolling & Animations */
+html {
+ scroll-behavior: smooth;
+}
+
+
+
+@keyframes click-shrink {
+ 0% { transform: scale(1); }
+ 50% { transform: scale(0.95); }
+ 100% { transform: scale(1); }
+}
+
+.click-animate:active {
+ animation: click-shrink 0.2s ease-in-out;
+}
+

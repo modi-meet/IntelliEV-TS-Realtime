@@ -1,12 +1,33 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Button from '../ui/Button';
+import { scrollToSection } from '../../utils/scroll';
 
 const Header = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    if (location.pathname !== '/') {
+      e.preventDefault();
+      navigate('/');
+      setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          element.classList.add('target-highlight');
+          setTimeout(() => element.classList.remove('target-highlight'), 2000);
+        }
+      }, 100);
+    } else {
+      scrollToSection(e, id);
+    }
+  };
+
   return (
-    <header className="bg-white/70 backdrop-blur-md border-b border-[#dee2e6] sticky top-0 z-50">
+    <header className="bg-white/70 backdrop-blur-md border-b border-[#dee2e6] sticky top-0 z-50 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-        <Link to="/" className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2 hover:scale-105 transition-transform duration-200">
           <svg
             className="h-8 w-auto text-[#212529]"
             viewBox="0 0 24 24"
@@ -25,28 +46,34 @@ const Header = () => {
           className="hidden md:flex space-x-8 items-center font-semibold text-[#6c757d]"
         >
           <a
-            href="/#features"
-            className="hover:text-black transition-colors duration-300"
+            href="#features"
+            onClick={(e) => handleNavClick(e, 'features')}
+            className="hover:text-black transition-colors duration-300 relative group"
           >
             Features
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
           </a>
           <a
-            href="/#audience"
-            className="hover:text-black transition-colors duration-300"
+            href="#audience"
+            onClick={(e) => handleNavClick(e, 'audience')}
+            className="hover:text-black transition-colors duration-300 relative group"
           >
             Who It's For
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
           </a>
           <a
-            href="/#contact"
-            className="hover:text-black transition-colors duration-300"
+            href="#contact"
+            onClick={(e) => handleNavClick(e, 'contact')}
+            className="hover:text-black transition-colors duration-300 relative group"
           >
             Contact
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
           </a>
         </nav>
         <div>
           <Button
             to="/login"
-            className="font-semibold"
+            className="font-semibold transform hover:scale-105 transition-transform duration-200 shadow-md hover:shadow-lg"
             href={undefined}
           >
             Login
@@ -56,5 +83,6 @@ const Header = () => {
     </header>
   );
 };
+
 
 export default Header;
