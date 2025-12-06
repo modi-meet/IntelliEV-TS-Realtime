@@ -65,6 +65,9 @@ const Footer = () => {
           </a>
         </div>
         <p className="text-gray-500">
+          Built with ❤️ for safer roads and smarter cities.
+        </p>
+        <p className="text-gray-500">
           &copy; 2025 IntelliEV Network. All rights reserved.
         </p>
       </div>

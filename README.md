@@ -1,84 +1,30 @@
-# IntelliEV 🚑⚡
-**Next-Gen Emergency Response & EV Management System**
+# IntelliEV
 
-IntelliEV is a dual-interface platform designed to bridge the gap between Electric Vehicle (EV) users and Emergency Response teams. It leverages real-time data, AI-driven analysis, and smart mapping to ensure safety on the roads and rapid response during critical incidents.
+**IntelliEV** is a real-time emergency response system for Electric Vehicles that automatically detects accidents, calculates severity, and dispatches the nearest emergency responder without human intervention.
 
----
+## Live Demo
 
-## 🌟 Overview
+🚀 **Live App:** [https://intelli-ev-ts-realtime.vercel.app](https://intelli-ev-ts-realtime.vercel.app)
 
-Imagine a system where your car detects an accident and instantly notifies the nearest ambulance, while simultaneously creating a "Green Corridor" for emergency vehicles. That's IntelliEV.
+> **Note:** This demo requires two different browser sessions to simulate the workflow:
+> 1. **User Role:** To trigger SOS alerts.
+> 2. **Emergency Role:** To receive and view dispatched alerts.
 
-We provide two distinct experiences:
-1.  **For EV Users:** A smart dashboard for navigation, hazard reporting, and community alerts.
-2.  **For Emergency Responders:** A command center to track fleet status, receive SOS alerts, and dispatch units efficiently using AI suggestions.
+<!-- TODO: Add demo credentials here for easy testing -->
 
----
+## Core Features
 
-## 🚀 Key Features
+*   **Real-time SOS Triggering:** Manual or automated accident detection simulation.
+*   **Intelligent Severity Engine:** Server-side calculation of accident severity (0-100 score) based on vehicle telemetry.
+*   **Automated Dispatch:** Instantly assigns the nearest available responder using geospatial distance calculation.
+*   **Live Tracking:** Real-time map visualization of SOS events and responder locations.
+*   **Role-Based Access:** Distinct dashboards for EV Drivers and Emergency Responders.
+*   **Auto-Recovery:** Automatic state reset for responders upon incident resolution.
 
-### 🚗 EV User Dashboard
-*   **Live Map Navigation:** Locate charging stations, view traffic signals, and see nearby EVs.
-*   **Smart Hazard Reporting:** Report accidents or road hazards. Our AI analyzes the severity automatically.
-*   **One-Touch SOS:** Trigger an emergency alert manually or let the system detect high-impact events.
-*   **Community Feed:** Real-time updates on road conditions from other users.
+## System Architecture
 
-### 🚨 Emergency Responder Dashboard
-*   **Real-Time Incident Tracking:** See SOS alerts pop up instantly on the map with severity levels.
-*   **AI Dispatch Logic:** The system suggests the *best* ambulance based on proximity and incident severity.
-*   **Fleet Management:** Track ambulance locations and status (Available, En-route, Busy).
-*   **Green Corridor Simulation:** Visualize routes for emergency vehicles.
-*   **Simulation Tools:** Built-in tools to simulate SOS calls and ambulance movements for testing.
+IntelliEV uses a serverless event-driven architecture. The React frontend communicates directly with Firestore for real-time data syncing, while Firebase Cloud Functions handle business logic, severity computation, and responder assignment in the background.
 
----
-
-## 🛠️ Tech Stack
-
-*   **Frontend:** React.js (Vite)
-*   **Styling:** Tailwind CSS
-*   **Maps:** Leaflet & React-Leaflet
-*   **Backend / Database:** Firebase (Authentication, Firestore, Realtime Database)
-*   **Routing:** Leaflet Routing Machine
-
----
-
-## 💻 Getting Started
-
-Follow these steps to set up the project locally:
-
-1.  **Clone the repository**
-    ```bash
-    git clone https://github.com/your-username/IntelliEV-react.git
-    cd intelliEV-react
-    ```
-
-2.  **Install Dependencies**
-    ```bash
-    npm install
-    ```
-
-3.  **Configure Firebase**
-    *   Ensure you have `src/services/firebase.js` configured with your Firebase credentials.
-    *   Enable **Authentication** (Email/Password).
-    *   Enable **Firestore Database** and **Realtime Database**.
-
-4.  **Run the Application**
-    ```bash
-    npm run dev
-    ```
-
-5.  **Accessing the Dashboards**
-    *   **EV User:** Sign up normally via the Login page.
-    *   **Emergency Responder:** Requires an account with `userType: 'emergency'` in the Firestore `users` collection.
-
----
-
-## 📸 Project Structure
-
-*   `src/pages/`: Main views (`Dashboard.jsx`, `EmergencyDashboard.jsx`, `Login.jsx`).
-*   `src/components/`: Reusable UI components (`Card`, `Button`) and Map logic (`MapComponent`, `EmergencyMapComponent`).
-*   `src/services/`: Firebase configuration and API handling.
-*   `src/contexts/`: Global state management (AuthContext).
 
 ```text
                       ┌──────────────────────┐
@@ -97,7 +43,7 @@ Follow these steps to set up the project locally:
            │  triggers
            │
  ┌─────────▼──────────┐
- │ Node Microservice  │  (Vercel Serverless Function)
+ │ Node Microservice  │  (Firebase Cloud(GCP) Serverless Function)
  │ "Incident Orchestrator"  
  │ - Assign responder  
  │ - Process SOS  
@@ -105,14 +51,124 @@ Follow these steps to set up the project locally:
  └─────────────────────┘
 ```
 
----
+<!-- TODO: Add architecture diagram here -->
+<!-- 
+[EV Client] -> [Firestore] -> [Cloud Functions] -> [Firestore] -> [Emergency Dashboard]
+-->
 
-*Built with ❤️ for safer roads and smarter cities.*
+## Cloud Backend Intelligence
 
-## React Compiler
+The backend logic is isolated in TypeScript Cloud Functions to ensure security and reliability.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### A. Severity Engine
+*   **Trigger:** `onCreate` on `sos_alerts/{id}`
+*   **Logic:** Analyzes vehicle telemetry (`g_force`, `airbags_deployed`, `delta_v`, `rollover_detected`).
+*   **Output:** Computes a `severity` object with a numeric score (0-100) and classification (`low`, `moderate`, `high`, `critical`).
 
-## Expanding the ESLint configuration
+### B. Nearest Responder Dispatch
+*   **Trigger:** `onUpdate` on `sos_alerts/{id}` (specifically when severity becomes `high` or `critical`).
+*   **Logic:** Queries available responders, calculates Haversine distance to the accident, and selects the nearest unit.
+*   **Output:** Updates the SOS document with `assignedResponder` details and marks the responder as `busy`.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### C. Auto-Reset Workflow
+*   **Trigger:** `onUpdate` on `sos_alerts/{id}` (when status changes to `resolved`).
+*   **Logic:** Identifies the assigned responder and releases them from the current task.
+*   **Output:** Sets responder status back to `available` and timestamps the resolution.
+
+## Data Models
+
+Key TypeScript interfaces used across the application:
+
+```typescript
+export interface Severity {
+  score: number;
+  level: "low" | "moderate" | "high" | "critical";
+  computedAt?: any; // Firestore Timestamp
+}
+
+export interface AssignedResponder {
+  uid: string;
+  name: string;
+  distanceKm: number;
+}
+
+export interface SosAlert {
+  id: string;
+  lat: number;
+  lng: number;
+  timestamp?: any;
+  triggerMethod?: string;
+  vehicleData?: Record<string, any>;
+  severity?: Severity;
+  assignedResponder?: AssignedResponder | null;
+  status?: string;
+}
+```
+
+## Frontend Architecture
+
+*   **Framework:** React 19 + TypeScript + Vite
+*   **State Management:** Real-time Firestore listeners (`onSnapshot`)
+*   **Maps:** React Leaflet with custom pulse animations for severity visualization
+*   **Styling:** Tailwind CSS for responsive, modern UI
+
+<!-- TODO: Add SOS list screenshot -->
+<!-- TODO: Add responder dashboard screenshot -->
+<!-- TODO: Add map view GIF -->
+
+## Firestore Structure
+
+*   `sos_alerts`: Stores all accident events, telemetry, and assignment status.
+*   `users`: Stores user profiles, roles (`user` vs `emergency`), and real-time location/status.
+
+## Realtime Data Flow
+
+1.  **Event:** EV detects crash -> Writes to `sos_alerts`.
+2.  **Compute:** Cloud Function calculates severity -> Updates `sos_alerts`.
+3.  **Dispatch:** Cloud Function finds nearest responder -> Updates `sos_alerts` & `users`.
+4.  **Notify:** Emergency Dashboard listener receives update -> Highlights map marker & triggers alert.
+5.  **Resolve:** Responder marks complete -> Cloud Function resets state.
+
+## Local Development
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/modi-meet/IntelliEV-TS-Realtime.git
+    cd IntelliEV-TS-Realtime
+    ```
+
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    cd functions && npm install
+    ```
+
+3.  **Start Backend Emulators:**
+    ```bash
+    cd functions
+    npm run serve
+    ```
+
+4.  **Start Frontend:**
+    ```bash
+    # In a new terminal
+    npm run dev
+    ```
+
+## Deployments
+
+*   **Frontend:** Deployed on Vercel (Auto-builds from `main` branch).
+*   **Backend:** Firebase Cloud Functions.
+
+<!-- TODO: Add deployment commands: firebase deploy --only functions -->
+
+## Roadmap
+
+*   [ ] Integration with TensorFlow.js for camera-based accident verification.
+*   [ ] Mobile app version for responders (React Native).
+*   [ ] Voice-activated SOS triggering.
+*   [ ] Historical data analytics dashboard.
+
+## License
+
+MIT
