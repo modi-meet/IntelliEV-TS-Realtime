@@ -55,13 +55,13 @@ const Footer = () => {
             <FaTwitter />
           </a>
           <a
-            href="#"
+            href="https://www.linkedin.com/in/modi-meet-profile/"
             className="text-gray-500 hover:text-white transition-transform duration-300 transform hover:scale-110"
           >
             <FaLinkedinIn />
           </a>
           <a
-            href="#"
+            href="https://github.com/modi-meet/IntelliEV-TS-Realtime"
             className="text-gray-500 hover:text-white transition-transform duration-300 transform hover:scale-110"
           >
             <FaGithub />
